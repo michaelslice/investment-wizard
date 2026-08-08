@@ -1,3 +1,19 @@
-interface Props { activePage: 'options' | 'earnings' | 'research' }
+interface Props { activePage: 'options' | 'earnings' | 'earnings-history' | 'price-history' | 'research' }
 
-export function AppNavbar({activePage}:Props){return <header className="topbar"><a className="brand" href="#/options"><span className="brand-mark">O/</span><span>OPTIONSCOPE</span><small>RISK TERMINAL</small></a><nav className="primary-nav" aria-label="Primary navigation"><a className={activePage==='options'?'active':''} href="#/options">Options terminal</a><a className={activePage==='earnings'?'active':''} href="#/earnings">Upcoming earnings</a><a className={activePage==='research'?'active':''} href="#/research">Market research</a></nav><div className="market-state"><span className="pulse"/><span>Market data</span></div></header>}
+const links = [
+  ['options', 'Options terminal'],
+  ['earnings', 'Upcoming earnings'],
+  ['earnings-history', 'Earnings reactions'],
+  ['price-history', 'Price history'],
+  ['research', 'Market research'],
+] as const;
+
+export function AppNavbar({ activePage }: Props) {
+  return <header className="topbar">
+    <a className="brand" href="#/options"><span className="brand-mark">O/</span><span>OPTIONSCOPE</span><small>RISK TERMINAL</small></a>
+    <nav className="primary-nav" aria-label="Primary navigation">
+      {links.map(([page, label]) => <a key={page} className={activePage === page ? 'active' : ''} href={`#/${page}`}>{label}</a>)}
+    </nav>
+    <div className="market-state"><span className="pulse"/><span>Market data</span></div>
+  </header>;
+}

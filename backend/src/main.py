@@ -7,12 +7,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.config import get_settings
 from src.earnings import constants as earnings_constants
 from src.earnings.client import YahooEarningsClient
+from src.earnings.history_client import YahooEarningsHistoryClient
+from src.earnings.history_service import EarningsHistoryService
 from src.earnings.router import router as earnings_router
 from src.earnings.service import EarningsService
 from src.exceptions import register_exception_handlers
 from src.options.client import CboeClient
 from src.options.router import router as options_router
 from src.options.service import OptionChainService
+from src.price_history.client import YahooPriceHistoryClient
+from src.price_history.router import router as price_history_router
+from src.price_history.service import PriceHistoryService
 from src.research import constants as research_constants
 from src.research.client import YahooResearchClient
 from src.research.router import router as research_router
@@ -33,8 +38,14 @@ async def lifespan(app: FastAPI):
         app.state.earnings_service = EarningsService(
             YahooEarningsClient(), earnings_constants.CACHE_TTL_SECONDS
         )
+        app.state.earnings_history_service = EarningsHistoryService(
+            YahooEarningsHistoryClient(), research_constants.CACHE_TTL_SECONDS
+        )
         app.state.research_service = ResearchService(
             YahooResearchClient(), research_constants.CACHE_TTL_SECONDS
+        )
+        app.state.price_history_service = PriceHistoryService(
+            YahooPriceHistoryClient(), research_constants.CACHE_TTL_SECONDS
         )
         yield
 
@@ -52,6 +63,7 @@ def create_app() -> FastAPI:
     app.include_router(options_router, prefix=settings.api_prefix)
     app.include_router(earnings_router, prefix=settings.api_prefix)
     app.include_router(research_router, prefix=settings.api_prefix)
+    app.include_router(price_history_router, prefix=settings.api_prefix)
     register_exception_handlers(app)
     return app
 

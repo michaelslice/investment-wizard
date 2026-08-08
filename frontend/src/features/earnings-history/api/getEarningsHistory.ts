@@ -1,0 +1,4 @@
+import type { EarningsHistoryResponse, EarningsReaction, EarningsReactionChartResponse } from '../types';
+
+export async function getEarningsHistory(symbol:string,limit=12):Promise<EarningsHistoryResponse>{const response=await fetch(`/api/earnings/history/${encodeURIComponent(symbol)}?limit=${limit}`),body=await response.json();if(!response.ok)throw new Error(body.error??'Unable to load historical earnings');return body}
+export async function getEarningsReactionChart(symbol:string,event:EarningsReaction,tradingDays:number):Promise<EarningsReactionChartResponse>{const query=new URLSearchParams({before_session:event.beforeSessionDate.slice(0,10),next_session:event.nextSessionDate.slice(0,10),trading_days:String(tradingDays)}),response=await fetch(`/api/earnings/history/${encodeURIComponent(symbol)}/chart?${query}`),body=await response.json();if(!response.ok)throw new Error(body.error??'Unable to load reaction chart');return body}
