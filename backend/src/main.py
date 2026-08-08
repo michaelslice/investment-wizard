@@ -13,6 +13,10 @@ from src.exceptions import register_exception_handlers
 from src.options.client import CboeClient
 from src.options.router import router as options_router
 from src.options.service import OptionChainService
+from src.research import constants as research_constants
+from src.research.client import YahooResearchClient
+from src.research.router import router as research_router
+from src.research.service import ResearchService
 
 
 @asynccontextmanager
@@ -29,6 +33,9 @@ async def lifespan(app: FastAPI):
         app.state.earnings_service = EarningsService(
             YahooEarningsClient(), earnings_constants.CACHE_TTL_SECONDS
         )
+        app.state.research_service = ResearchService(
+            YahooResearchClient(), research_constants.CACHE_TTL_SECONDS
+        )
         yield
 
 
@@ -44,6 +51,7 @@ def create_app() -> FastAPI:
     )
     app.include_router(options_router, prefix=settings.api_prefix)
     app.include_router(earnings_router, prefix=settings.api_prefix)
+    app.include_router(research_router, prefix=settings.api_prefix)
     register_exception_handlers(app)
     return app
 
