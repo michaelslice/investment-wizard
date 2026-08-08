@@ -11,6 +11,13 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+node_modules/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
 downloads/
 eggs/
 .eggs/

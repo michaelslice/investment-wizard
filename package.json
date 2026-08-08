@@ -1,12 +1,13 @@
 {
-  "name": "options-lifetime-visualizer",
+  "name": "optionscope",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
+  "workspaces": ["frontend"],
   "scripts": {
-    "dev": "node --watch server.mjs",
-    "start": "node server.mjs",
-    "check": "node --check server.mjs && node --check public/app.js"
+    "dev": "npm --workspace frontend run dev",
+    "build": "npm --workspace frontend run build",
+    "api": "backend/.venv/bin/uvicorn src.main:app --app-dir backend --reload --port 8000",
+    "check": "npm run build && backend/.venv/bin/python -m pytest backend/tests"
   },
   "engines": {
     "node": ">=20"

@@ -1,26 +1,76 @@
 # OptionScope
 
-A dependency-free options visualizer that loads a live option chain and projects
-the selected contract's Black–Scholes Greeks through expiration.
+OptionScope is a live options risk terminal with position-level P&L simulation
+and Black–Scholes Greek projections through expiration. Its shared navbar also
+provides an upcoming earnings calendar for the configured stock watchlist.
 
-## Run locally
+## Architecture
 
-Requires Node.js 20 or newer.
+The repository is split into two independently runnable applications.
 
-```bash
-npm start
+```text
+options-dashboard/
+├── frontend/
+│   └── src/
+│       ├── app/                  # application assembly
+│       ├── components/           # shared application navigation
+│       ├── features/options/     # options API, hooks, math, UI, and types
+│       ├── features/earnings/    # earnings API, hook, calendar UI, and types
+│       └── styles/               # global visual system
+└── backend/
+    ├── src/
+    │   ├── options/              # router, schemas, client, service, and utilities
+    │   ├── earnings/             # yfinance client, calendar service, and router
+    │   ├── config.py             # global settings
+    │   ├── exceptions.py         # shared exception handling
+    │   └── main.py               # FastAPI assembly
+    └── tests/options/            # tests mirror domain structure
 ```
 
-Open [http://localhost:4173](http://localhost:4173).
+The frontend follows the feature-oriented boundaries described by
+[Bulletproof React](https://github.com/alan2207/bulletproof-react). The backend
+uses domain packages and thin routers following
+[FastAPI Best Practices](https://github.com/zhanymkanov/fastapi-best-practices).
+
+## Setup
+
+```bash
+npm install
+python3 -m venv backend/.venv
+backend/.venv/bin/pip install -e 'backend[dev]'
+```
+
+Run the API and frontend in separate terminals:
+
+```bash
+npm run api
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173). FastAPI documentation is
+available at [http://localhost:8000/docs](http://localhost:8000/docs).
+
+The frontend routes are `#/options` and `#/earnings`. The earnings API is
+available at `GET /api/earnings`; an optional `symbols=AAPL,MSFT` query parameter
+overrides the default watchlist.
+
+## Verification
+
+```bash
+npm run build
+backend/.venv/bin/python -m pytest backend/tests
+backend/.venv/bin/ruff check backend/src backend/tests
+```
 
 ## Data and modeling
 
-- The server proxies Cboe's public delayed option-chain endpoint and caches
-  responses for 30 seconds. Quotes are delayed and the upstream endpoint can
-  occasionally rate-limit.
-- The chart is a scenario projection, not historical recorded Greeks. The stock
-  price follows a linear path from the current quote to the user's chosen price
-  at expiration. Implied volatility and the risk-free rate stay constant unless
-  the user changes those controls.
-- The model assumes European exercise and no dividends. It is intended for
-  education and scenario analysis, not trading decisions.
+- The async FastAPI service retrieves Cboe delayed option quotes and caches raw
+  chains for 30 seconds.
+- Earnings dates reuse the original `yfinance.Ticker(...).calendar` workflow,
+  run blocking provider calls in worker threads with bounded concurrency, and
+  cache calendars for 15 minutes.
+- The scenario engine interpolates from the current underlying price to the
+  selected expiration price and computes option value plus Delta, Gamma, Theta,
+  Vega, and Rho with Black–Scholes.
+- The model assumes European exercise, constant volatility/rate, and no
+  dividends. It is intended for education and scenario analysis.
