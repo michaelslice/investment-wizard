@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Live option chain and Greeks lifetime visualizer">
+  <title>OptionScope — Greeks over time</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="OptionScope home"><span class="brand-mark">OS</span><span>OptionScope</span></a>
+    <div class="market-state"><span class="pulse"></span><span id="data-state">Connecting to market data</span></div>
+  </header>
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">OPTIONS ANALYTICS / LIVE CHAIN</p>
+        <h1>See how an option<br><em>changes with time.</em></h1>
+        <p class="lede">Explore live contracts, then project delta, gamma, theta, vega, and rho across every remaining day.</p>
+      </div>
+      <form id="symbol-form" class="ticker-search">
+        <label for="symbol">Underlying ticker</label>
+        <div class="search-row">
+          <input id="symbol" name="symbol" value="AAPL" maxlength="12" autocomplete="off" spellcheck="false">
+          <button type="submit">Load chain <span aria-hidden="true">→</span></button>
+        </div>
+      </form>
+    </section>
+
+    <section class="workspace" aria-live="polite">
+      <div id="error" class="error hidden" role="alert"></div>
+      <div class="quote-strip">
+        <div><span class="quote-symbol" id="quote-symbol">AAPL</span><span id="quote-price" class="quote-price">—</span><span id="quote-change" class="quote-change">—</span></div>
+        <div class="quote-meta"><span id="quote-time">Awaiting quote</span><span class="dot">•</span><span id="quote-source">—</span></div>
+      </div>
+
+      <div class="controls">
+        <label>Expiration<select id="expiration" disabled><option>Loading…</option></select></label>
+        <div class="segmented" aria-label="Option type">
+          <button id="call-button" class="active" data-type="call">Calls</button>
+          <button id="put-button" data-type="put">Puts</button>
+        </div>
+        <label>Contract<select id="contract" disabled><option>Loading…</option></select></label>
+      </div>
+
+      <div class="contract-summary">
+        <div><span>Selected contract</span><strong id="contract-name">—</strong></div>
+        <div><span>Bid / ask</span><strong id="bid-ask">—</strong></div>
+        <div><span>Implied vol.</span><strong id="iv-value">—</strong></div>
+        <div><span>Open interest</span><strong id="oi-value">—</strong></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="chart-head">
+          <div>
+            <p class="eyebrow">LIFETIME PROJECTION</p>
+            <h2 id="chart-title">Delta through expiration</h2>
+          </div>
+          <div class="greek-tabs" id="greek-tabs" aria-label="Greek to chart"></div>
+        </div>
+        <div class="assumptions">
+          <label>Volatility <span id="vol-label">—</span><input id="volatility" type="range" min="1" max="200" step="1" value="30"></label>
+          <label>Risk-free rate <span id="rate-label">4.25%</span><input id="rate" type="range" min="0" max="15" step="0.05" value="4.25"></label>
+          <label class="future-price-control">Stock price at expiration <input id="future-price" class="number-input" type="number" min="0.01" step="0.01" value="100" aria-label="Future stock price at expiration"><input id="future-price-slider" type="range" min="50" max="150" step="0.5" value="100" aria-label="Future stock price slider"></label>
+        </div>
+        <div class="chart-wrap">
+          <svg id="chart" viewBox="0 0 1000 430" role="img" aria-labelledby="chart-title chart-desc"></svg>
+          <p id="chart-desc" class="sr-only">A line chart showing the selected Greek projected from today through expiration.</p>
+          <div id="tooltip" class="tooltip hidden"></div>
+        </div>
+        <div class="chart-foot"><span><i class="line-key"></i> Black–Scholes projection</span><span id="model-note">Current IV held constant • No dividends</span></div>
+      </div>
+    </section>
+  </main>
+  <footer>For education and scenario analysis only. Quotes may be delayed. Not investment advice.</footer>
+  <script src="/app.js" defer></script>
+</body>
+</html>
