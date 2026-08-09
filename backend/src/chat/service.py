@@ -24,7 +24,7 @@ class ChatService:
         python = self._project_root / "mcp" / ".venv" / "bin" / "python"
         if not python.exists():
             raise ChatUnavailable(
-                "OptionScope MCP environment is not installed",
+                "investment-wizard MCP environment is not installed",
                 hint="Install the MCP package using the instructions in mcp/README.md.",
             )
         transcript = "\n\n".join(
@@ -35,21 +35,21 @@ class ChatService:
             f"{transcript}"
         )
         async with MCPServerStdio(
-            name="OptionScope",
+            name="investment-wizard",
             params={
                 "command": str(python),
-                "args": ["-m", "optionscope_mcp.server"],
+                "args": ["-m", "investment_wizard_mcp.server"],
                 "env": {
-                    "OPTIONSCOPE_API_URL": "http://127.0.0.1:8000/api",
+                    "INVESTMENT_WIZARD_API_URL": "http://127.0.0.1:8000/api",
                 },
             },
             cache_tools_list=True,
         ) as server:
             agent = Agent(
-                name="OptionScope Investment Research Assistant",
+                name="investment-wizard Investment Research Assistant",
                 model=self._model,
                 instructions=(
-                    "You are a rigorous investment research assistant. Use the OptionScope MCP "
+                    "You are a rigorous investment research assistant. Use the investment-wizard MCP "
                     "tools whenever the user asks about a company, security, options, prices, "
                     "earnings, sectors, or financial metrics. Clearly distinguish reported data, "
                     "calculation, and inference. Never fabricate unavailable values. Discuss risks "

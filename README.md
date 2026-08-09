@@ -1,6 +1,6 @@
-# OptionScope
+# investment-wizard
 
-OptionScope is a live options risk terminal with position-level P&L simulation
+investment-wizard is a live options risk terminal with position-level P&L simulation
 and Black–Scholes Greek projections through expiration. Its shared navbar also
 provides an upcoming earnings calendar for the configured stock watchlist.
 It also includes sector-based market research ranked by live market capitalization.
@@ -82,14 +82,14 @@ npm run dev
 Open [http://localhost:5173](http://localhost:5173). FastAPI documentation is
 available at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-The frontend routes are `#/options`, `#/chain`, `#/simulator`, `#/earnings`, `#/earnings-history`, `#/compare`, `#/focus`, `#/holders`, `#/journal`,
+The frontend routes are `#/options`, `#/chain`, `#/simulator`, `#/earnings`, `#/earnings-history`, `#/compare`, `#/focus`, `#/holders`, `#/net-worth`, `#/journal`,
 `#/price-history`, `#/research`, `#/ticker/{symbol}`, and `#/watchlist`. The earnings API is
 available at `GET /api/earnings`; an optional `symbols=AAPL,MSFT` query parameter
 overrides the default watchlist.
 
 The research assistant is available at `#/chat`. It sends conversation history
 to `POST /api/chat`; the API invokes OpenAI and gives the agent access to the
-read-only OptionScope MCP server over a local stdio connection.
+read-only investment-wizard MCP server over a local stdio connection.
 
 Historical reactions are available from
 `GET /api/earnings/history/{symbol}?limit=12`. The response includes report

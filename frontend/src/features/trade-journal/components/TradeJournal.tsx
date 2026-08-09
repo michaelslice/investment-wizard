@@ -2,9 +2,9 @@ import { useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 
 import type { TradeWriteup } from '../types';
 
-const STORAGE_KEY='optionscope.trade-writeups.v1';
+const STORAGE_KEY='investment-wizard.trade-writeups.v1',LEGACY_STORAGE_KEY='optionscope.trade-writeups.v1';
 const blank=():TradeWriteup=>({id:crypto.randomUUID(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),title:'',ticker:'',status:'draft',direction:'Bullish',expectedMove:'',timeHorizon:'',catalyst:'',edge:'',invalidation:'',whyOptions:'',setup:'',entryCriteria:'',optionStructure:'Long call',expiration:'',dte:'',strike:'',delta:'',iv:'',portfolioSize:'25000',riskPercent:'1',premium:'',totalExposureLimit:'10',profitExit:'+50% option value',lossExit:'-30% option value or thesis invalidated',timeExit:'Close with 45 DTE remaining',rules:'Never average down',resultPercent:'',resultMoney:'',ruleFollowed:'',review:''});
-const load=():TradeWriteup[]=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)??'[]')}catch{return[]}};
+const load=():TradeWriteup[]=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)??localStorage.getItem(LEGACY_STORAGE_KEY)??'[]')}catch{return[]}};
 const money=(value:number)=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(value||0);
 const date=(value:string)=>new Date(value).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 

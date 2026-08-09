@@ -22,8 +22,8 @@ for argument in "$@"; do
   esac
 done
 
-log() { printf '\033[1;32m[OptionScope]\033[0m %s\n' "$1"; }
-fail() { printf '\033[1;31m[OptionScope]\033[0m %s\n' "$1" >&2; exit 1; }
+log() { printf '\033[1;32m[investment-wizard]\033[0m %s\n' "$1"; }
+fail() { printf '\033[1;31m[investment-wizard]\033[0m %s\n' "$1" >&2; exit 1; }
 
 command -v python3 >/dev/null 2>&1 || fail "Python 3.11 or newer is required."
 command -v npm >/dev/null 2>&1 || fail "Node.js and npm are required (Node 20+ recommended)."
@@ -50,8 +50,8 @@ fi
 
 if [[ ! -f "$PROJECT_DIR/.env" && ! -f "$PROJECT_DIR/backend/.env" ]]; then
   cp "$PROJECT_DIR/backend/.env.example" "$PROJECT_DIR/.env"
-  printf '\033[1;33m[OptionScope]\033[0m Created .env from backend/.env.example.\n'
-  printf '\033[1;33m[OptionScope]\033[0m Add a valid OPENAI_API_KEY to enable AI Research.\n'
+  printf '\033[1;33m[investment-wizard]\033[0m Created .env from backend/.env.example.\n'
+  printf '\033[1;33m[investment-wizard]\033[0m Add a valid OPENAI_API_KEY to enable AI Research.\n'
 fi
 
 if [[ "$SETUP_ONLY" == true ]]; then
@@ -85,7 +85,7 @@ log "Starting Vite at http://localhost:5173"
 npm --workspace frontend run dev -- --host 127.0.0.1 --port 5173 &
 WEB_PID=$!
 
-printf '\n\033[1;32mOptionScope is starting.\033[0m\n'
+printf '\n\033[1;32minvestment-wizard is starting.\033[0m\n'
 printf 'Frontend: \033[4mhttp://localhost:5173\033[0m\n'
 printf 'API docs: \033[4mhttp://localhost:8000/docs\033[0m\n'
 printf 'Press Ctrl+C to stop both servers.\n\n'

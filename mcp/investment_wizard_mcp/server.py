@@ -3,17 +3,33 @@ from typing import Any, Literal
 
 from fastmcp import FastMCP
 
-from optionscope_mcp.api_client import OptionScopeApiClient
+from investment_wizard_mcp.api_client import InvestmentWizardApiClient
+from investment_wizard_mcp.news import fetch_market_news
 
 mcp = FastMCP(
-    "OptionScope Market Research",
+    "investment-wizard Market Research",
     instructions=(
         "Read-only stock and option market research tools. Data may be delayed and is not "
         "investment advice. Prefer ticker_research_snapshot for an initial company review, "
         "then use focused tools for deeper event, price, sector, or derivatives analysis."
     ),
 )
-api = OptionScopeApiClient()
+api = InvestmentWizardApiClient()
+
+
+@mcp.tool(tags={"news", "markets", "agentic-research"})
+async def get_daily_market_news_digest(
+    lookback_hours: int = 24,
+    max_articles: int = 80,
+) -> dict[str, Any]:
+    """Gather and deduplicate today's broad US stock-market news across macro, rates,
+    technology, energy, financials, healthcare, consumer, earnings, and deal activity.
+    Returns structured headlines, publisher links, topic coverage, and likely driver clusters
+    for an LLM to produce an updated market summary with reported facts separated from inference.
+    Call again whenever a refreshed digest is needed. lookback_hours must be 1-72 and
+    max_articles must be 10-200.
+    """
+    return await fetch_market_news(lookback_hours, max_articles)
 
 
 @mcp.tool(tags={"equities", "fundamentals"})

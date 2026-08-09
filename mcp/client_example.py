@@ -5,7 +5,7 @@ from fastmcp import Client
 
 
 async def main() -> None:
-    server_path = Path(__file__).parent / "optionscope_mcp" / "server.py"
+    server_path = Path(__file__).parent / "investment_wizard_mcp" / "server.py"
     client = Client(str(server_path))
     async with client:
         tools = await client.list_tools()

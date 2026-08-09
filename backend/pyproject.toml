@@ -1,5 +1,5 @@
 [project]
-name = "optionscope-api"
+name = "investment-wizard-api"
 version = "1.0.0"
 requires-python = ">=3.11"
 dependencies = [

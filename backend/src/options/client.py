@@ -16,7 +16,7 @@ class CboeClient:
         try:
             response = await self._http.get(
                 constants.CBOE_OPTIONS_PATH.format(symbol=symbol),
-                headers={"User-Agent": "optionscope/1.0", "Accept": "application/json"},
+                headers={"User-Agent": "investment-wizard/1.0", "Accept": "application/json"},
             )
             response.raise_for_status()
             return response.json()

@@ -6,6 +6,7 @@ import type { OptionType } from '../types';
 import { GreeksChart } from './GreeksChart';
 import { PositionCard } from './PositionCard';
 import { OptionLifetimeChart } from './OptionLifetimeChart';
+import { getEarningsCalendar } from '../../earnings/api/getEarningsCalendar';
 
 export function OptionsTerminal() {
   const [symbol, setSymbol] = useState('AAPL');
@@ -16,6 +17,7 @@ export function OptionsTerminal() {
   const [futurePrice, setFuturePrice] = useState(100);
   const [volatility, setVolatility] = useState(30);
   const [rate, setRate] = useState(4.25);
+  const [nextEarnings, setNextEarnings] = useState<string | null | undefined>(undefined);
   const { data, loading, error, load } = useOptionChain();
   const chainContracts = useMemo(
     () => data ? (type === 'call' ? data.calls : data.puts) : [],
@@ -38,6 +40,22 @@ export function OptionsTerminal() {
     setFuturePrice(Number(data.spot.toFixed(2)));
     setVolatility(Math.min(200, Math.max(1, contract.impliedVolatility * 100)));
   }, [data?.symbol, data?.selectedExpiration, contract?.symbol]);
+
+  useEffect(() => {
+    if (!data?.symbol) return;
+    let active = true;
+    setNextEarnings(undefined);
+    getEarningsCalendar([data.symbol])
+      .then(calendar => {
+        if (!active) return;
+        const upcoming = calendar.events
+          .filter(event => new Date(event.earningsDate).getTime() >= Date.now())
+          .sort((a, b) => a.earningsDate.localeCompare(b.earningsDate))[0];
+        setNextEarnings(upcoming?.earningsDate ?? null);
+      })
+      .catch(() => { if (active) setNextEarnings(null); });
+    return () => { active = false; };
+  }, [data?.symbol]);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -65,7 +83,7 @@ export function OptionsTerminal() {
         {data && <>
           <div className="quote-strip">
             <div><span className="quote-symbol">{data.symbol}</span><span className="quote-price">{money(data.spot, data.currency)}</span><span className={`quote-change ${data.spotChange >= 0 ? 'positive' : 'negative'}`}>{data.spotChange >= 0 ? '+' : ''}{data.spotChange.toFixed(2)}%</span></div>
-            <div className="quote-meta"><span>Updated {new Date(data.marketTime * 1000).toLocaleString()}</span><span className="dot">•</span><span>{data.source}</span></div>
+            <div className="quote-meta"><span className="next-earnings"><b>Next earnings</b> {nextEarnings===undefined?'Loading…':nextEarnings===null?'Unavailable':new Date(nextEarnings).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span><span className="dot">•</span><span>Updated {new Date(data.marketTime * 1000).toLocaleString()}</span><span className="dot">•</span><span>{data.source}</span></div>
           </div>
           <div className="controls">
             <label>Expiration<select value={data.selectedExpiration} onChange={event => void load(data.symbol, Number(event.target.value))}>{data.expirations.map(value => <option key={value} value={value}>{dateLabel(value)}</option>)}</select></label>

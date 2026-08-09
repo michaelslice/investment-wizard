@@ -13,7 +13,7 @@ class YahooResearchClient:
     def get_constituents(self) -> list[dict[str, str]]:
         response = httpx.get(
             constants.CONSTITUENTS_URL,
-            headers={"User-Agent": "optionscope/1.0"},
+            headers={"User-Agent": "investment-wizard/1.0"},
             follow_redirects=True,
             timeout=15,
         )

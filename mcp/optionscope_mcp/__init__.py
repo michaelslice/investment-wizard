@@ -1,1 +1,0 @@
-"""OptionScope MCP server package."""

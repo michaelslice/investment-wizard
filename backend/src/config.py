@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "OptionScope API"
+    app_name: str = "investment-wizard API"
     api_prefix: str = "/api"
     cboe_base_url: str = "https://cdn.cboe.com"
     cache_ttl_seconds: int = 30
@@ -13,12 +13,16 @@ class Settings(BaseSettings):
     frontend_origin: str = "http://localhost:5173"
     openai_api_key: str | None = Field(
         default=None,
-        validation_alias=AliasChoices("OPENAI_API_KEY", "OPTIONSCOPE_OPENAI_API_KEY"),
+        validation_alias=AliasChoices(
+            "OPENAI_API_KEY",
+            "INVESTMENT_WIZARD_OPENAI_API_KEY",
+            "OPTIONSCOPE_OPENAI_API_KEY",
+        ),
     )
     openai_model: str = "gpt-5.6-sol"
 
     model_config = SettingsConfigDict(
-        env_prefix="OPTIONSCOPE_",
+        env_prefix="INVESTMENT_WIZARD_",
         env_file=(".env", "backend/.env"),
         env_file_encoding="utf-8",
     )

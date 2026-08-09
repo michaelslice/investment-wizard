@@ -12,5 +12,8 @@ import './styles/strategy-simulator.css';
 import './styles/holders.css';
 import './styles/option-chain.css';
 import './styles/ticker-stock-chart.css';
+import './styles/net-worth.css';
+import './styles/next-earnings.css';
+import './styles/strategy-explanation.css';
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
