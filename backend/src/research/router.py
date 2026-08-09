@@ -3,7 +3,13 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 
 from src.research.dependencies import ResearchServiceDep
-from src.research.schemas import CompanyResearch, SectorResearch, SectorSummary, TickerResearch
+from src.research.schemas import (
+    CompanyResearch,
+    HoldersResponse,
+    SectorResearch,
+    SectorSummary,
+    TickerResearch,
+)
 
 router = APIRouter(prefix="/research", tags=["market research"])
 
@@ -22,6 +28,11 @@ async def get_companies(
 @router.get("/tickers/{symbol}", response_model=TickerResearch, response_model_by_alias=True)
 async def get_ticker_research(symbol: str, service: ResearchServiceDep) -> TickerResearch:
     return await service.get_ticker_research(symbol.upper())
+
+
+@router.get("/holders/{symbol}", response_model=HoldersResponse, response_model_by_alias=True)
+async def get_holders(symbol: str, service: ResearchServiceDep) -> HoldersResponse:
+    return await service.get_holders(symbol.upper())
 
 
 @router.get("/sectors", response_model=list[SectorSummary], response_model_by_alias=True)

@@ -49,6 +49,19 @@ agents over the Model Context Protocol.
 
 ## Setup
 
+For a complete setup and launch from the repository root:
+
+```bash
+./setup-and-run.sh
+```
+
+The script creates the backend and MCP virtual environments, installs all
+Python and frontend dependencies, creates a starter `.env` when needed, and
+runs FastAPI and Vite together. Use `--setup-only` to install without running,
+or `--skip-install` on later launches.
+
+Manual setup:
+
 ```bash
 npm install
 python3 -m venv backend/.venv
@@ -69,7 +82,7 @@ npm run dev
 Open [http://localhost:5173](http://localhost:5173). FastAPI documentation is
 available at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-The frontend routes are `#/options`, `#/earnings`, `#/earnings-history`, `#/compare`,
+The frontend routes are `#/options`, `#/chain`, `#/simulator`, `#/earnings`, `#/earnings-history`, `#/compare`, `#/focus`, `#/holders`, `#/journal`,
 `#/price-history`, `#/research`, `#/ticker/{symbol}`, and `#/watchlist`. The earnings API is
 available at `GET /api/earnings`; an optional `symbols=AAPL,MSFT` query parameter
 overrides the default watchlist.

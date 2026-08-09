@@ -19,6 +19,9 @@ class StubClient:
     def get_ticker_research(self, symbol: str):
         return {"symbol": symbol, "name": "Apple", "currentPrice": 100, "marketCap": 2}
 
+    def get_holders(self, symbol: str):
+        return [{"name": "Fund A", "shares": 100, "changePercent": 2.5}]
+
 
 async def test_sector_companies_are_ranked_by_market_cap(monkeypatch) -> None:
     constants = __import__("src.research.constants", fromlist=["GICS_TO_SLUG"])
@@ -35,3 +38,9 @@ async def test_ticker_research_is_cached() -> None:
     second = await service.get_ticker_research("AAPL")
     assert first.current_price == 100
     assert second.name == "Apple"
+
+
+async def test_holders_are_returned() -> None:
+    result = await ResearchService(StubClient(), 60).get_holders("AAPL")
+    assert result.symbol == "AAPL"
+    assert result.holders[0].shares == 100

@@ -1,13 +1,18 @@
-interface Props { activePage: 'chat' | 'compare' | 'options' | 'earnings' | 'earnings-history' | 'price-history' | 'research' | 'ticker' | 'watchlist' }
+interface Props { activePage: 'chain' | 'chat' | 'compare' | 'focus' | 'holders' | 'journal' | 'options' | 'simulator' | 'earnings' | 'earnings-history' | 'price-history' | 'research' | 'ticker' | 'watchlist' }
 
 const links = [
   ['options', 'Options terminal'],
+  ['chain', 'Options chain'],
+  ['simulator', 'Strategy lab'],
   ['earnings', 'Upcoming earnings'],
   ['earnings-history', 'Earnings reactions'],
   ['price-history', 'Price history'],
   ['compare', 'Compare'],
   ['research', 'Market research'],
   ['watchlist', 'Watchlist'],
+  ['focus', 'Focus'],
+  ['holders', 'Holders'],
+  ['journal', 'Trade journal'],
   ['chat', 'AI research'],
 ] as const;
 

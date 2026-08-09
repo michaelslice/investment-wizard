@@ -1,0 +1,19 @@
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
+
+import { getWatchlistCompanies } from '../../watchlist/api/getWatchlistCompanies';
+import type { WatchlistCompany } from '../../watchlist/types';
+
+const STORAGE_KEY='optionscope.focus-tickers.v1';
+const DEFAULTS=['PLTR','AAPL','AMD'];
+const read=():string[]=>{try{const value=JSON.parse(localStorage.getItem(STORAGE_KEY)??'null');return Array.isArray(value)&&value.length?value.filter(item=>typeof item==='string'):DEFAULTS}catch{return DEFAULTS}};
+const money=(value:number|null)=>value===null?'—':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(value);
+
+export function FocusBoard(){
+  const[symbols,setSymbols]=useState<string[]>(read),[companies,setCompanies]=useState<WatchlistCompany[]>([]),[input,setInput]=useState(''),[loading,setLoading]=useState(true),[error,setError]=useState<string|null>(null),[updatedAt,setUpdatedAt]=useState<Date|null>(null),[refreshKey,setRefreshKey]=useState(0);
+  const load=useCallback(()=>{setLoading(true);setError(null);getWatchlistCompanies(symbols).then(value=>{setCompanies(value);setUpdatedAt(new Date())}).catch(value=>setError(value instanceof Error?value.message:'Unable to load focused quotes')).finally(()=>setLoading(false))},[symbols]);
+  useEffect(()=>{localStorage.setItem(STORAGE_KEY,JSON.stringify(symbols));load()},[symbols,refreshKey,load]);
+  const bySymbol=useMemo(()=>new Map(companies.map(company=>[company.symbol,company])),[companies]);
+  const add=(event:FormEvent)=>{event.preventDefault();const additions=input.toUpperCase().split(/[\s,]+/).map(value=>value.trim()).filter(value=>/^[A-Z.^-]{1,12}$/.test(value));if(!additions.length){setError('Enter at least one valid ticker.');return}setSymbols(current=>[...current,...additions.filter(symbol=>!current.includes(symbol))].slice(0,25));setInput('')};
+  const remove=(symbol:string)=>setSymbols(current=>current.filter(item=>item!==symbol));
+  return <main className="focus-main"><section className="focus-hero"><div><p className="eyebrow">FOCUS MODE / LIVE QUOTE BOARD</p><h1>Ticker focus</h1><p>Keep the securities that matter right now in one quiet, continuously accessible view.</p></div><form className="focus-add" onSubmit={add}><label>Add tickers</label><div><input value={input} onChange={event=>setInput(event.target.value.toUpperCase())} placeholder="PLTR, AAPL, AMD" aria-label="Add focused tickers"/><button disabled={!input.trim()}>Add</button></div><small>Separate multiple symbols with commas or spaces</small></form></section><section className="focus-panel"><header><div><p className="eyebrow">CURRENT FOCUS</p><strong>{symbols.length} {symbols.length===1?'security':'securities'}</strong></div><div><span>{updatedAt?`Updated ${updatedAt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',second:'2-digit'})}`:'Waiting for quotes'}</span><button onClick={()=>setRefreshKey(value=>value+1)} disabled={loading}>{loading?'Refreshing…':'Refresh quotes'}</button></div></header>{error?<div className="error">{error}</div>:null}<div className="focus-list">{symbols.map((symbol,index)=>{const company=bySymbol.get(symbol);return <article key={symbol} className="focus-row"><span className="focus-rank">{String(index+1).padStart(2,'0')}</span><a href={`#/ticker/${encodeURIComponent(symbol)}`}><strong>{symbol}</strong><small>{company?.name??(loading?'Loading…':'Quote unavailable')}</small></a><div><span>Current price</span><strong>{loading&&!company?'—':money(company?.currentPrice??null)}</strong></div><button className="focus-remove" onClick={()=>remove(symbol)} aria-label={`Remove ${symbol}`}>×</button></article>})}{!symbols.length?<div className="focus-empty">No tickers in focus. Add a symbol above.</div>:null}</div><footer><span>Quotes provided by Yahoo Finance via OptionScope</span><span>Saved in this browser</span></footer></section></main>
+}

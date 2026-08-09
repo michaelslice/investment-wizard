@@ -93,3 +93,20 @@ class TickerResearch(BaseModel):
     recommendation: str | None = None
     analyst_opinions: int | None = Field(None, alias="analystOpinions")
     source: str = "Yahoo Finance via yfinance"
+
+
+class InstitutionalHolder(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    name: str
+    shares: int
+    value: int | None = None
+    percent_held: float | None = Field(None, alias="percentHeld")
+    change_percent: float | None = Field(None, alias="changePercent")
+    reported_date: str | None = Field(None, alias="reportedDate")
+
+
+class HoldersResponse(BaseModel):
+    symbol: str
+    holders: list[InstitutionalHolder]
+    source: str = "Yahoo Finance via yfinance"
