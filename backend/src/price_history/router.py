@@ -12,6 +12,8 @@ router = APIRouter(prefix="/prices", tags=["price history"])
 async def get_price_history(
     symbol: str,
     service: PriceHistoryServiceDep,
-    period: Annotated[Literal["6mo", "1y", "3y", "5y", "10y", "max"], Query()] = "1y",
+    period: Annotated[
+        Literal["1mo", "3mo", "6mo", "1y", "3y", "5y", "10y", "max"], Query()
+    ] = "1y",
 ) -> PriceHistoryResponse:
     return await service.get_timeline(symbol.upper(), period)

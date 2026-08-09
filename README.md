@@ -11,7 +11,7 @@ daily stock prices.
 
 ## Architecture
 
-The repository is split into two independently runnable applications.
+The repository contains independently runnable frontend, API, and MCP applications.
 
 ```text
 options-dashboard/
@@ -20,14 +20,16 @@ options-dashboard/
 │       ├── app/                  # application assembly
 │       ├── components/           # shared application navigation
 │       ├── features/options/     # options API, hooks, math, UI, and types
+│       ├── features/chat/        # OpenAI + MCP research conversation UI
 │       ├── features/earnings/    # earnings API, hook, calendar UI, and types
 │       ├── features/earnings-history/ # historical reaction analysis
 │       ├── features/price-history/ # price and earnings timeline
 │       ├── features/research/    # sector research API, state, UI, and types
 │       └── styles/               # global visual system
-└── backend/
+├── backend/
     ├── src/
     │   ├── options/              # router, schemas, client, service, and utilities
+    │   ├── chat/                 # OpenAI agent, MCP bridge, schemas, and router
     │   ├── earnings/             # yfinance client, calendar service, and router
     │   ├── research/             # sector universes, fundamentals, and rankings
     │   ├── price_history/        # historical prices and earnings events
@@ -35,12 +37,15 @@ options-dashboard/
     │   ├── exceptions.py         # shared exception handling
     │   └── main.py               # FastAPI assembly
     └── tests/options/            # tests mirror domain structure
+└── mcp/                          # FastMCP tools and async client example
 ```
 
 The frontend follows the feature-oriented boundaries described by
 [Bulletproof React](https://github.com/alan2207/bulletproof-react). The backend
 uses domain packages and thin routers following
 [FastAPI Best Practices](https://github.com/zhanymkanov/fastapi-best-practices).
+The `mcp/` package exposes the same read-only research capabilities to LLM
+agents over the Model Context Protocol.
 
 ## Setup
 
@@ -48,7 +53,11 @@ uses domain packages and thin routers following
 npm install
 python3 -m venv backend/.venv
 backend/.venv/bin/pip install -e 'backend[dev]'
+cp backend/.env.example backend/.env
 ```
+
+Edit `backend/.env` and replace the placeholder with your OpenAI API key. The
+key is read only by FastAPI and is never sent to or stored by the browser.
 
 Run the API and frontend in separate terminals:
 
@@ -60,10 +69,14 @@ npm run dev
 Open [http://localhost:5173](http://localhost:5173). FastAPI documentation is
 available at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-The frontend routes are `#/options`, `#/earnings`, `#/earnings-history`,
-`#/price-history`, and `#/research`. The earnings API is
+The frontend routes are `#/options`, `#/earnings`, `#/earnings-history`, `#/compare`,
+`#/price-history`, `#/research`, `#/ticker/{symbol}`, and `#/watchlist`. The earnings API is
 available at `GET /api/earnings`; an optional `symbols=AAPL,MSFT` query parameter
 overrides the default watchlist.
+
+The research assistant is available at `#/chat`. It sends conversation history
+to `POST /api/chat`; the API invokes OpenAI and gives the agent access to the
+read-only OptionScope MCP server over a local stdio connection.
 
 Historical reactions are available from
 `GET /api/earnings/history/{symbol}?limit=12`. The response includes report
@@ -77,6 +90,10 @@ the earnings report.
 
 Market research exposes `GET /api/research/sectors` for the sector catalog and
 `GET /api/research/sectors/{sector}` for companies ranked by market cap.
+Watchlist fundamentals use `GET /api/research/companies?symbols=AAPL,MSFT`;
+saved symbols remain client-side in browser local storage.
+Ticker dossiers use `GET /api/research/tickers/{symbol}` for valuation, growth,
+profitability, balance-sheet, cash-flow, ownership, and analyst metrics.
 
 The combined stock timeline is available from
 `GET /api/prices/{symbol}?period=1y`. Supported periods are `6mo`, `1y`, `3y`,

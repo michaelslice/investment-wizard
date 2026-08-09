@@ -4,6 +4,8 @@ import httpx
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.chat.router import router as chat_router
+from src.chat.service import ChatService
 from src.config import get_settings
 from src.earnings import constants as earnings_constants
 from src.earnings.client import YahooEarningsClient
@@ -13,6 +15,8 @@ from src.earnings.router import router as earnings_router
 from src.earnings.service import EarningsService
 from src.exceptions import register_exception_handlers
 from src.options.client import CboeClient
+from src.options.history_client import YahooOptionHistoryClient
+from src.options.history_service import OptionHistoryService
 from src.options.router import router as options_router
 from src.options.service import OptionChainService
 from src.price_history.client import YahooPriceHistoryClient
@@ -35,6 +39,7 @@ async def lifespan(app: FastAPI):
         app.state.option_chain_service = OptionChainService(
             CboeClient(client, settings), settings.cache_ttl_seconds
         )
+        app.state.option_history_service = OptionHistoryService(YahooOptionHistoryClient())
         app.state.earnings_service = EarningsService(
             YahooEarningsClient(), earnings_constants.CACHE_TTL_SECONDS
         )
@@ -47,6 +52,7 @@ async def lifespan(app: FastAPI):
         app.state.price_history_service = PriceHistoryService(
             YahooPriceHistoryClient(), research_constants.CACHE_TTL_SECONDS
         )
+        app.state.chat_service = ChatService(settings.openai_api_key, settings.openai_model)
         yield
 
 
@@ -57,13 +63,14 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=[settings.frontend_origin],
         allow_credentials=True,
-        allow_methods=["GET"],
+        allow_methods=["GET", "POST"],
         allow_headers=["*"],
     )
     app.include_router(options_router, prefix=settings.api_prefix)
     app.include_router(earnings_router, prefix=settings.api_prefix)
     app.include_router(research_router, prefix=settings.api_prefix)
     app.include_router(price_history_router, prefix=settings.api_prefix)
+    app.include_router(chat_router, prefix=settings.api_prefix)
     register_exception_handlers(app)
     return app
 

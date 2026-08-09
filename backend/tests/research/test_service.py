@@ -2,6 +2,12 @@ from src.research.service import ResearchService
 
 
 class StubClient:
+    def get_constituents(self):
+        return [
+            {"symbol": "MSFT", "name": "Microsoft", "sector": "Test", "industry": "Software"},
+            {"symbol": "AAPL", "name": "Apple", "sector": "Test", "industry": "Hardware"},
+        ]
+
     def get_company(self, symbol: str):
         return {
             "symbol": symbol, "name": symbol, "sector": "Technology", "industry": "Software",
@@ -10,9 +16,22 @@ class StubClient:
             "targetPrice": 120, "recommendation": "buy",
         }
 
+    def get_ticker_research(self, symbol: str):
+        return {"symbol": symbol, "name": "Apple", "currentPrice": 100, "marketCap": 2}
+
 
 async def test_sector_companies_are_ranked_by_market_cap(monkeypatch) -> None:
-    monkeypatch.setitem(__import__("src.research.constants", fromlist=["SECTOR_SYMBOLS"]).SECTOR_SYMBOLS, "test", ("MSFT", "AAPL"))
-    monkeypatch.setitem(__import__("src.research.constants", fromlist=["SECTOR_LABELS"]).SECTOR_LABELS, "test", "Test")
+    constants = __import__("src.research.constants", fromlist=["GICS_TO_SLUG"])
+    monkeypatch.setitem(constants.GICS_TO_SLUG, "Test", "test")
+    monkeypatch.setitem(constants.SECTOR_LABELS, "test", "Test")
     result = await ResearchService(StubClient(), 60).get_sector("test")
     assert [company.symbol for company in result.companies] == ["AAPL", "MSFT"]
+    assert result.total_count == 2
+
+
+async def test_ticker_research_is_cached() -> None:
+    service = ResearchService(StubClient(), 60)
+    first = await service.get_ticker_research("AAPL")
+    second = await service.get_ticker_research("AAPL")
+    assert first.current_price == 100
+    assert second.name == "Apple"

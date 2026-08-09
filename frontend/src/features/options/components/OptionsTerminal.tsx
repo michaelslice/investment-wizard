@@ -5,6 +5,7 @@ import { dateLabel, mark, money } from '../lib/formatters';
 import type { OptionType } from '../types';
 import { GreeksChart } from './GreeksChart';
 import { PositionCard } from './PositionCard';
+import { OptionLifetimeChart } from './OptionLifetimeChart';
 
 export function OptionsTerminal() {
   const [symbol, setSymbol] = useState('AAPL');
@@ -74,6 +75,7 @@ export function OptionsTerminal() {
           {contract && <>
             <PositionCard chain={data} contract={contract} type={type} contracts={contracts} costBasis={costBasis} futurePrice={futurePrice} onContractsChange={setContracts} onCostBasisChange={setCostBasis}/>
             <GreeksChart spot={data.spot} expiration={data.selectedExpiration} contract={contract} type={type} futurePrice={futurePrice} volatility={volatility} rate={rate} contracts={contracts} costBasis={costBasis} onFuturePriceChange={setFuturePrice} onVolatilityChange={setVolatility} onRateChange={setRate}/>
+            <OptionLifetimeChart contract={contract}/>
           </>}
         </>}
       </section>

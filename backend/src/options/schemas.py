@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -43,3 +44,20 @@ class OptionChain(BaseModel):
     calls: list[OptionContract]
     puts: list[OptionContract]
     source: str
+
+
+class OptionHistoryPoint(BaseModel):
+    date: datetime
+    open: float
+    high: float
+    low: float
+    close: float
+    volume: int
+
+
+class OptionHistoryResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    contract_symbol: str = Field(alias="contractSymbol")
+    points: list[OptionHistoryPoint]
+    source: str = "Yahoo Finance via yfinance"

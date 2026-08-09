@@ -5,6 +5,7 @@ from fastapi import Depends, Request
 
 from src.config import Settings, get_settings
 from src.options.client import CboeClient
+from src.options.history_service import OptionHistoryService
 from src.options.service import OptionChainService
 
 
@@ -27,3 +28,10 @@ def get_option_chain_service(request: Request) -> OptionChainService:
 
 
 OptionChainServiceDep = Annotated[OptionChainService, Depends(get_option_chain_service)]
+
+
+def get_option_history_service(request: Request) -> OptionHistoryService:
+    return request.app.state.option_history_service
+
+
+OptionHistoryServiceDep = Annotated[OptionHistoryService, Depends(get_option_history_service)]

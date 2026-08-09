@@ -4,3 +4,5 @@ export interface OptionContract {symbol:string;type:OptionType;strike:number;bid
 export interface OptionChain {symbol:string;spot:number;spotChange:number;marketTime:number;currency:string;expirations:number[];selectedExpiration:number;calls:OptionContract[];puts:OptionContract[];source:string}
 export interface Greeks {delta:number;gamma:number;theta:number;vega:number;rho:number;optionPrice:number}
 export interface ProjectionPoint extends Greeks {elapsed:number;remaining:number;spot:number}
+export interface OptionHistoryPoint {date:string;open:number;high:number;low:number;close:number;volume:number}
+export interface OptionHistoryResponse {contractSymbol:string;points:OptionHistoryPoint[];source:string}

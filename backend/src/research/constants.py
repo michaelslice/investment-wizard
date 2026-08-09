@@ -13,4 +13,25 @@ SECTOR_SYMBOLS: dict[str, tuple[str, ...]] = {
 SECTOR_LABELS = {
     key: key.replace("-", " ").title() for key in SECTOR_SYMBOLS
 }
+SECTOR_LABELS.update({
+    "all": "S&P 500",
+    "basic-materials": "Materials",
+})
+GICS_TO_SLUG = {
+    "Communication Services": "communication-services",
+    "Consumer Discretionary": "consumer-cyclical",
+    "Consumer Staples": "consumer-defensive",
+    "Energy": "energy",
+    "Financials": "financial-services",
+    "Health Care": "healthcare",
+    "Industrials": "industrials",
+    "Information Technology": "technology",
+    "Materials": "basic-materials",
+    "Real Estate": "real-estate",
+    "Utilities": "utilities",
+}
+CONSTITUENTS_URL = (
+    "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/"
+    "main/data/constituents.csv"
+)
 CACHE_TTL_SECONDS = 3600
