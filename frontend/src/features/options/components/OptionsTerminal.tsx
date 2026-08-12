@@ -9,7 +9,10 @@ import { OptionLifetimeChart } from './OptionLifetimeChart';
 import { getEarningsCalendar } from '../../earnings/api/getEarningsCalendar';
 
 export function OptionsTerminal() {
-  const [symbol, setSymbol] = useState('AAPL');
+  const linked = new URLSearchParams(window.location.hash.split('?')[1] ?? '');
+  const linkedSymbol = linked.get('symbol')?.toUpperCase() || 'AAPL';
+  const linkedContract = linked.get('contract');
+  const [symbol, setSymbol] = useState(linkedSymbol);
   const [type, setType] = useState<OptionType>('call');
   const [contractIndex, setContractIndex] = useState(0);
   const [contracts, setContracts] = useState(1);
@@ -18,7 +21,7 @@ export function OptionsTerminal() {
   const [volatility, setVolatility] = useState(30);
   const [rate, setRate] = useState(4.25);
   const [nextEarnings, setNextEarnings] = useState<string | null | undefined>(undefined);
-  const { data, loading, error, load } = useOptionChain();
+  const { data, loading, error, load } = useOptionChain(linkedSymbol);
   const chainContracts = useMemo(
     () => data ? (type === 'call' ? data.calls : data.puts) : [],
     [data, type],
@@ -27,6 +30,8 @@ export function OptionsTerminal() {
 
   useEffect(() => {
     if (!data || !chainContracts.length) return;
+    const linkedIndex = linkedContract ? chainContracts.findIndex(item => item.symbol === linkedContract) : -1;
+    if (linkedIndex >= 0) { setContractIndex(linkedIndex); return; }
     const nearest = chainContracts.reduce(
       (best, item, index) => Math.abs(item.strike - data.spot) < Math.abs(chainContracts[best].strike - data.spot) ? index : best,
       0,

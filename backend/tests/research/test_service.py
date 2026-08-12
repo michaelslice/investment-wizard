@@ -10,10 +10,17 @@ class StubClient:
 
     def get_company(self, symbol: str):
         return {
-            "symbol": symbol, "name": symbol, "sector": "Technology", "industry": "Software",
-            "marketCap": 2 if symbol == "AAPL" else 1, "currentPrice": 100,
-            "trailingPe": 20, "revenue": 10, "profitMargin": .2,
-            "targetPrice": 120, "recommendation": "buy",
+            "symbol": symbol,
+            "name": symbol,
+            "sector": "Technology",
+            "industry": "Software",
+            "marketCap": 2 if symbol == "AAPL" else 1,
+            "currentPrice": 100,
+            "trailingPe": 20,
+            "revenue": 10,
+            "profitMargin": 0.2,
+            "targetPrice": 120,
+            "recommendation": "buy",
         }
 
     def get_ticker_research(self, symbol: str):

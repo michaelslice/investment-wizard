@@ -47,7 +47,8 @@ class ResearchService:
             return cached[1]
         universe = await self._get_universe()
         selected = [
-            company for company in universe
+            company
+            for company in universe
             if (slug == "all" or constants.GICS_TO_SLUG.get(company["sector"]) == slug)
             and (
                 not query
@@ -57,7 +58,7 @@ class ResearchService:
         ]
         total = len(selected)
         start = (page - 1) * page_size
-        page_companies = selected[start:start + page_size]
+        page_companies = selected[start : start + page_size]
         results = await asyncio.gather(
             *(self._get_company(company) for company in page_companies), return_exceptions=True
         )
@@ -82,12 +83,17 @@ class ResearchService:
 
     async def get_companies(self, symbols: list[str]) -> list[CompanyResearch]:
         results = await asyncio.gather(
-            *(self._get_company({
-                "symbol": symbol,
-                "name": symbol,
-                "sector": "N/A",
-                "industry": "N/A",
-            }) for symbol in symbols),
+            *(
+                self._get_company(
+                    {
+                        "symbol": symbol,
+                        "name": symbol,
+                        "sector": "N/A",
+                        "industry": "N/A",
+                    }
+                )
+                for symbol in symbols
+            ),
             return_exceptions=True,
         )
         return [result for result in results if isinstance(result, CompanyResearch)]

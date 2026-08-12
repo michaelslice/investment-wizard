@@ -6,9 +6,7 @@ import yfinance as yf
 
 class YahooOptionHistoryClient:
     def get_history(self, contract_symbol: str) -> list[dict[str, Any]]:
-        history = yf.Ticker(contract_symbol).history(
-            period="max", interval="1d", auto_adjust=False
-        )
+        history = yf.Ticker(contract_symbol).history(period="max", interval="1d", auto_adjust=False)
         return [
             {
                 "date": index.to_pydatetime(),

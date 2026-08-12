@@ -22,6 +22,9 @@ from src.options.service import OptionChainService
 from src.price_history.client import YahooPriceHistoryClient
 from src.price_history.router import router as price_history_router
 from src.price_history.service import PriceHistoryService
+from src.real_estate.client import RentCastClient
+from src.real_estate.router import router as real_estate_router
+from src.real_estate.service import RealEstateService
 from src.research import constants as research_constants
 from src.research.client import YahooResearchClient
 from src.research.router import router as research_router
@@ -53,6 +56,7 @@ async def lifespan(app: FastAPI):
             YahooPriceHistoryClient(), research_constants.CACHE_TTL_SECONDS
         )
         app.state.chat_service = ChatService(settings.openai_api_key, settings.openai_model)
+        app.state.real_estate_service = RealEstateService(RentCastClient(settings.rentcast_api_key))
         yield
 
 
@@ -71,6 +75,7 @@ def create_app() -> FastAPI:
     app.include_router(research_router, prefix=settings.api_prefix)
     app.include_router(price_history_router, prefix=settings.api_prefix)
     app.include_router(chat_router, prefix=settings.api_prefix)
+    app.include_router(real_estate_router, prefix=settings.api_prefix)
     register_exception_handlers(app)
     return app
 

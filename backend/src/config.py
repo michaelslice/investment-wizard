@@ -20,6 +20,7 @@ class Settings(BaseSettings):
         ),
     )
     openai_model: str = "gpt-5.6-sol"
+    rentcast_api_key: str | None = Field(default=None, validation_alias="RENTCAST_API_KEY")
 
     model_config = SettingsConfigDict(
         env_prefix="INVESTMENT_WIZARD_",

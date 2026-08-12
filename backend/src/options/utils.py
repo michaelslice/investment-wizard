@@ -18,9 +18,7 @@ def parse_option_symbol(value: str) -> ParsedOptionSymbol | None:
     if not match:
         return None
     _, year, month, day, side, strike = match.groups()
-    expiration = datetime(
-        2000 + int(year), int(month), int(day), tzinfo=UTC
-    )
+    expiration = datetime(2000 + int(year), int(month), int(day), tzinfo=UTC)
     return ParsedOptionSymbol(
         expiration=int(expiration.timestamp()),
         option_type="call" if side == "C" else "put",

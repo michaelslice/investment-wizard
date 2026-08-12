@@ -10,14 +10,16 @@ class StubHistoryClient:
 
     def get_history(self, contract_symbol: str):
         self.calls += 1
-        return [{
-            "date": datetime(2026, 1, 2, tzinfo=UTC),
-            "open": 1.0,
-            "high": 1.4,
-            "low": 0.9,
-            "close": 1.25,
-            "volume": 100,
-        }]
+        return [
+            {
+                "date": datetime(2026, 1, 2, tzinfo=UTC),
+                "open": 1.0,
+                "high": 1.4,
+                "low": 0.9,
+                "close": 1.25,
+                "volume": 100,
+            }
+        ]
 
 
 @pytest.mark.asyncio

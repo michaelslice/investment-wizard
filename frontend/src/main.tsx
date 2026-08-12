@@ -15,5 +15,11 @@ import './styles/ticker-stock-chart.css';
 import './styles/net-worth.css';
 import './styles/next-earnings.css';
 import './styles/strategy-explanation.css';
+import './styles/real-estate.css';
+import './styles/eye.css';
+import './styles/sandbox.css';
+import './styles/daily-performance.css';
+import './styles/kelly.css';
+import './styles/settings.css';
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

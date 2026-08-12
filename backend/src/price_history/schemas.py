@@ -31,3 +31,22 @@ class PriceHistoryResponse(BaseModel):
     earnings: list[TimelineEarningsEvent]
     latest_price: float | None = Field(None, alias="latestPrice")
     source: str = "Yahoo Finance via yfinance"
+
+
+class IntradayPricePoint(BaseModel):
+    timestamp: datetime
+    open: float
+    high: float
+    low: float
+    close: float
+    volume: int
+
+
+class IntradaySessionResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    symbol: str
+    session_date: str = Field(alias="sessionDate")
+    interval: str = "5m"
+    points: list[IntradayPricePoint]
+    source: str = "Yahoo Finance via yfinance"

@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime, timedelta
 from math import isnan
 from typing import Any
 
@@ -13,9 +13,12 @@ class YahooPriceHistoryClient:
         earnings = ticker.get_earnings_dates(limit=100)
         price_points = [
             {
-                "date": index.to_pydatetime(), "open": float(row["Open"]),
-                "high": float(row["High"]), "low": float(row["Low"]),
-                "close": float(row["Close"]), "volume": int(row["Volume"]),
+                "date": index.to_pydatetime(),
+                "open": float(row["Open"]),
+                "high": float(row["High"]),
+                "low": float(row["Low"]),
+                "close": float(row["Close"]),
+                "volume": int(row["Volume"]),
             }
             for index, row in prices.iterrows()
         ]
@@ -25,14 +28,36 @@ class YahooPriceHistoryClient:
             for date, row in earnings.sort_index().iterrows():
                 value = date.to_pydatetime()
                 normalized = value if value.tzinfo else value.replace(tzinfo=UTC)
-                events.append({
-                    "earningsDate": normalized,
-                    "epsEstimate": self._number(row.get("EPS Estimate")),
-                    "reportedEps": self._number(row.get("Reported EPS")),
-                    "surprisePercent": self._number(row.get("Surprise(%)")),
-                    "isUpcoming": normalized.astimezone(UTC) > now,
-                })
+                events.append(
+                    {
+                        "earningsDate": normalized,
+                        "epsEstimate": self._number(row.get("EPS Estimate")),
+                        "reportedEps": self._number(row.get("Reported EPS")),
+                        "surprisePercent": self._number(row.get("Surprise(%)")),
+                        "isUpcoming": normalized.astimezone(UTC) > now,
+                    }
+                )
         return {"prices": price_points, "earnings": events}
+
+    def get_intraday_session(self, symbol: str, session_date: date) -> list[dict[str, Any]]:
+        prices = yf.Ticker(symbol).history(
+            start=session_date.isoformat(),
+            end=(session_date + timedelta(days=1)).isoformat(),
+            interval="5m",
+            auto_adjust=True,
+            prepost=False,
+        )
+        return [
+            {
+                "timestamp": index.to_pydatetime(),
+                "open": float(row["Open"]),
+                "high": float(row["High"]),
+                "low": float(row["Low"]),
+                "close": float(row["Close"]),
+                "volume": int(row["Volume"]),
+            }
+            for index, row in prices.iterrows()
+        ]
 
     @staticmethod
     def _number(value: Any) -> float | None:

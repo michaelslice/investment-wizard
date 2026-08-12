@@ -61,3 +61,24 @@ class OptionHistoryResponse(BaseModel):
     contract_symbol: str = Field(alias="contractSymbol")
     points: list[OptionHistoryPoint]
     source: str = "Yahoo Finance via yfinance"
+
+
+class OptionSearchResult(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    underlying: str
+    spot: float
+    expiration: int
+    dte: int
+    moneyness: float
+    spread_percent: float = Field(alias="spreadPercent")
+    contract: OptionContract
+
+
+class OptionSearchResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    results: list[OptionSearchResult]
+    contracts_scanned: int = Field(alias="contractsScanned")
+    symbols_scanned: int = Field(alias="symbolsScanned")
+    source: str

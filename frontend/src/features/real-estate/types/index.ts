@@ -1,0 +1,3 @@
+export interface PropertyListing{id:string;address:string;city:string;state:string;zip_code:string|null;property_type:string|null;price:number;bedrooms:number|null;bathrooms:number|null;square_footage:number|null;lot_size:number|null;year_built:number|null;days_on_market:number|null;status:string|null;latitude:number|null;longitude:number|null;listed_date:string|null}
+export interface PropertySearchResponse{listings:PropertyListing[];total:number;limit:number;offset:number;provider:string}
+export interface PropertyFilters{city:string;state:string;zip_code:string;property_type:string;min_price:string;max_price:string;min_bedrooms:string;min_bathrooms:string;min_square_feet:string;max_days_old:string}

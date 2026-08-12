@@ -1,0 +1,2 @@
+import type{IntradaySessionResponse}from'../types';
+export async function getIntradaySession(symbol:string,sessionDate:string):Promise<IntradaySessionResponse>{const params=new URLSearchParams({session_date:sessionDate}),response=await fetch(`/api/prices/${encodeURIComponent(symbol)}/intraday?${params}`),body=await response.json();if(!response.ok)throw new Error(body.error??body.detail??'Unable to load intraday prices');return body}

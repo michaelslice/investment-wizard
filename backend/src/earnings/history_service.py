@@ -30,7 +30,9 @@ class EarningsHistoryService:
         response = HistoricalEarningsResponse(
             symbol=symbol,
             events=events,
-            averageChangePercent=sum(event.change_percent for event in events) / len(events) if events else 0,
+            averageChangePercent=sum(event.change_percent for event in events) / len(events)
+            if events
+            else 0,
             positiveReactions=sum(event.change > 0 for event in events),
         )
         self._cache[key] = (monotonic(), response)

@@ -17,6 +17,4 @@ def get_earnings_history_service(request: Request) -> EarningsHistoryService:
     return request.app.state.earnings_history_service
 
 
-EarningsHistoryServiceDep = Annotated[
-    EarningsHistoryService, Depends(get_earnings_history_service)
-]
+EarningsHistoryServiceDep = Annotated[EarningsHistoryService, Depends(get_earnings_history_service)]

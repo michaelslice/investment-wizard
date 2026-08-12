@@ -1,0 +1,2 @@
+import type{EyeFilters,EyeResponse}from '../types';
+export async function searchOptions(filters:EyeFilters):Promise<EyeResponse>{const params=new URLSearchParams();Object.entries(filters).forEach(([key,value])=>{if(value.trim())params.set(key,key==='min_iv'||key==='max_iv'?String(Number(value)/100):value.trim())});const response=await fetch(`/api/options/search?${params}`),body=await response.json();if(!response.ok)throw new Error(body.error??body.detail??'Unable to scan option contracts');return body}

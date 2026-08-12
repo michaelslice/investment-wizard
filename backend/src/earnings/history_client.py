@@ -12,7 +12,9 @@ class YahooEarningsHistoryClient:
         earnings = ticker.get_earnings_dates(limit=max(limit + 2, 12))
         if earnings is None or earnings.empty:
             return []
-        earnings = earnings[earnings["Reported EPS"].notna()].sort_index(ascending=False).head(limit)
+        earnings = (
+            earnings[earnings["Reported EPS"].notna()].sort_index(ascending=False).head(limit)
+        )
         if earnings.empty:
             return []
         start = earnings.index.min().date() - timedelta(days=10)
@@ -26,27 +28,37 @@ class YahooEarningsHistoryClient:
         for report_date, row in earnings.iterrows():
             report = report_date.to_pydatetime()
             after_close = report.hour >= 16
-            prior = [session for session in sessions if session[0] <= report.date()] if after_close else [session for session in sessions if session[0] < report.date()]
-            following = [session for session in sessions if session[0] > report.date()] if after_close else [session for session in sessions if session[0] >= report.date()]
+            prior = (
+                [session for session in sessions if session[0] <= report.date()]
+                if after_close
+                else [session for session in sessions if session[0] < report.date()]
+            )
+            following = (
+                [session for session in sessions if session[0] > report.date()]
+                if after_close
+                else [session for session in sessions if session[0] >= report.date()]
+            )
             if not prior or not following:
                 continue
             before, after = prior[-1], following[0]
             before_close, next_open = float(before[2]["Close"]), float(after[2]["Open"])
             change = next_open - before_close
-            records.append({
-                "reportDate": report,
-                "timing": "After market close" if after_close else "Before market open",
-                "beforeSessionDate": before[1],
-                "beforeClose": before_close,
-                "nextSessionDate": after[1],
-                "nextOpen": next_open,
-                "change": change,
-                "changePercent": change / before_close * 100,
-                "profitOn100Shares": change * 100,
-                "epsEstimate": self._number(row.get("EPS Estimate")),
-                "reportedEps": self._number(row.get("Reported EPS")),
-                "surprisePercent": self._number(row.get("Surprise(%)")),
-            })
+            records.append(
+                {
+                    "reportDate": report,
+                    "timing": "After market close" if after_close else "Before market open",
+                    "beforeSessionDate": before[1],
+                    "beforeClose": before_close,
+                    "nextSessionDate": after[1],
+                    "nextOpen": next_open,
+                    "change": change,
+                    "changePercent": change / before_close * 100,
+                    "profitOn100Shares": change * 100,
+                    "epsEstimate": self._number(row.get("EPS Estimate")),
+                    "reportedEps": self._number(row.get("Reported EPS")),
+                    "surprisePercent": self._number(row.get("Surprise(%)")),
+                }
+            )
         return records
 
     def get_reaction_chart(
@@ -64,7 +76,9 @@ class YahooEarningsHistoryClient:
         if prices.empty:
             return []
         available_dates = sorted({index.date() for index in prices.index})
-        before_dates = [value for value in available_dates if value <= before_session][-trading_days:]
+        before_dates = [value for value in available_dates if value <= before_session][
+            -trading_days:
+        ]
         after_dates = [value for value in available_dates if value >= next_session][:trading_days]
         selected_dates = set(before_dates + after_dates)
         return [
